@@ -5,6 +5,7 @@ import com.core.download.HttpDownloadManagerImpl
 import com.core.download.HttpDownloadTask
 import com.core.download.HttpDownloadTaskListener
 import org.junit.Test
+import java.util.concurrent.CountDownLatch
 
 class HttpDownloadManagerImplTests {
 
@@ -16,7 +17,7 @@ class HttpDownloadManagerImplTests {
     fun testDownload() {
         dm.listeners += object : HttpDownloadTaskListener {
             override fun onStarted(task: HttpDownloadTask) {
-                print("onStart| task.filePath = ${task.filePath}", )
+                println("onStart| task.filePath = ${task.filePath}", )
             }
 
             override fun onProgressing(
@@ -26,7 +27,7 @@ class HttpDownloadManagerImplTests {
                 contentLength: Long,
                 cost: Long
             ) {
-                print("onProgressing | readBytes = ${readBytes},  totalReadBytes = ${totalReadBytes}, contentLength = ${contentLength}, cost = ${cost}", )
+                println("onProgressing | readBytes = ${readBytes},  totalReadBytes = ${totalReadBytes}, contentLength = ${contentLength}, cost = ${cost}", )
             }
 
             override fun onError(task: HttpDownloadTask, ex: Throwable) {
@@ -34,10 +35,11 @@ class HttpDownloadManagerImplTests {
             }
 
             override fun onCompleted(task: HttpDownloadTask) {
-                print("onCompleted")
+                println("onCompleted")
             }
         }
-        dm.newTask(url = "https://baidu.com");
+        dm.newTask(url = "http://music.163.com/song/media/outer/url?id=436346833");
 
+        CountDownLatch(1).await()
     }
 }

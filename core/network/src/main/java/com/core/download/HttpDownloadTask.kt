@@ -1,5 +1,9 @@
 package com.core.download
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -54,6 +58,7 @@ class HttpDownloadTask(
         listeners = listeners + listener
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun startAsync() {
 
         val client = httpDownloadManagerRef.newClient()
@@ -70,14 +75,16 @@ class HttpDownloadTask(
             builder.header("Range", "bytes=${offset}-")
         }
         val request = builder.build()
-        doStart(client, request)
+
+        val job = GlobalScope.launch(Dispatchers.IO) {
+            doStart(client, request)
+        }
     }
 
     private fun doStart(client: OkHttpClient, request: Request) {
 
         status = STATUS_DOWNLOADING
         started()
-
         // TODO: 协程
         call = client.newCall(request)
 
