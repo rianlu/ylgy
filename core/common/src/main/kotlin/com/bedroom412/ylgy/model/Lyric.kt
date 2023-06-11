@@ -12,7 +12,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "lyric", indices = [Index("url"), Index("name")])
 data class Lyric(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    var id: Int,
     @ColumnInfo("name")
     var name: String?,
     @ColumnInfo("url")

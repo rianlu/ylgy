@@ -19,7 +19,7 @@ data class ImportSourcePart(
      *
      */
     @PrimaryKey
-    val id: Int,
+    var id: Int,
     /**
      * 链接地址（可能为目录）
      */

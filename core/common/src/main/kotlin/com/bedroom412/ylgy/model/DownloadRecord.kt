@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
 data class DownloadRecord(
 
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    var id: Int,
     @ColumnInfo("all_size")
     var allSize: String?,
     @ColumnInfo("offset")

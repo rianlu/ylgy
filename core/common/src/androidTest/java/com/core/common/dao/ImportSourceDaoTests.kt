@@ -1,7 +1,8 @@
 package com.core.common.dao
 
 import android.content.Context
-import androidx.room.Room.inMemoryDatabaseBuilder
+import android.graphics.Path
+import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.bedroom412.ylgy.dao.AppDatabase
@@ -11,37 +12,55 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 
 
 @RunWith(AndroidJUnit4::class)
 class ImportSourceDaoTests {
 
 
-    private var mDb: AppDatabase? = null
+    private lateinit var mDb: AppDatabase
     private var dao: ImportSourceDao? = null
 
     @Before
     fun createDb() {
         val context: Context =  InstrumentationRegistry.getInstrumentation().targetContext
-        mDb = inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
-        dao = mDb!!.importSourceDao();
+
+//        mDb = inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+        mDb = Room.databaseBuilder(context, AppDatabase::class.java, "test.db").build()
+        println("createDb")
+//        dao = mDb!!.importSourceDao();
+        dao = mDb.importSourceDao()
+
+        val dbpath: File? = context.getDatabasePath("test.db")
+        println("dbpath.absolutePath = ${dbpath}")
     }
 
     @After
     fun closeDb() {
-        mDb!!.close()
+        println("closeDb")
+        if (this::mDb.isInitialized) {
+            mDb.close()
+        }
     }
 
     @Test
 //    @Throws(Exception::class)
     fun testUpdate() {
-
-        var importSource = ImportSource(
-            type = 1,
-            url = "http://",
-            id = null!!
-        )
-        dao!!.update(importSource)
+        run {
+            println("testUpdate")
+            val importSource = ImportSource(
+                type = 1,
+                url = "http://",
+                id = null
+            )
+            if (this::mDb.isInitialized) {
+                dao!!.insert(importSource)
+                println("result: $importSource.id")
+            } else {
+                println("为实例化")
+            }
+        }
     }
 
 }

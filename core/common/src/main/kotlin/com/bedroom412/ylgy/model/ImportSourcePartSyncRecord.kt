@@ -12,7 +12,7 @@ import androidx.room.PrimaryKey
 data class ImportSourcePartSyncRecord(
 
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    var id: Int,
     @ColumnInfo("source_id")
     var sourceId: Int?,
     @ColumnInfo("source_part_id")

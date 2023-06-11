@@ -20,7 +20,7 @@ import androidx.room.PrimaryKey
 data class PlayList(
 
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    var id: Int,
     @ColumnInfo("name")
     var name: String?,
     @ColumnInfo("type")

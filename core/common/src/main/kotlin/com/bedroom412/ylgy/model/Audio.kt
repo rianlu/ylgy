@@ -28,7 +28,7 @@ import androidx.room.PrimaryKey
 data class Audio(
 
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    var id: Int,
     @ColumnInfo("type")
     var type: Int?,
     @ColumnInfo("name")

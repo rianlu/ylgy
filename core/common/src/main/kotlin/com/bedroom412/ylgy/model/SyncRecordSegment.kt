@@ -12,8 +12,8 @@ import androidx.room.PrimaryKey
 data class SyncRecordSegment(
 
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
-    @ColumnInfo("source_id")
+    var id: Int,
+    @ColumnInfo("record_id")
     var recordId: String?,
     @ColumnInfo("source_id")
     var sourceId: Int?,

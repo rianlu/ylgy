@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
 data class ImportSource(
 
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    var id: Int?,
     @ColumnInfo("url")
     var url: String?,
     @ColumnInfo("type")
