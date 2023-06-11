@@ -4,3 +4,9 @@ plugins {
     id 'com.android.library' version '8.0.1' apply false
     id 'org.jetbrains.kotlin.android' version '1.8.20' apply false
 }
+
+ext {
+//    https://developer.android.com/training/data-storage/room/defining-data?hl=zh-cn
+//    https://developer.android.com/jetpack/androidx/releases/room?hl=zh-cn
+    roomVersion = "2.5.1"
+}
