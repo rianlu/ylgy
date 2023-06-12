@@ -39,8 +39,6 @@ data class Audio(
     var duration: Long?,
     @ColumnInfo("source_id")
     var sourceId: Int?,
-    @ColumnInfo("source_part_id")
-    var sourcePartId: Int?,
     @ColumnInfo("url")
     var url: String?,
     @ColumnInfo("file_path")

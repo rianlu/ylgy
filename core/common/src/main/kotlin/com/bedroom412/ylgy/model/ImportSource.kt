@@ -17,9 +17,24 @@ data class ImportSource(
     @PrimaryKey(autoGenerate = true)
     var id: Int?,
     @ColumnInfo("url")
-    var url: String?,
+    var url: String,
     @ColumnInfo("type")
-    var type: Int?
+    var type: Int?,
+    @ColumnInfo("name")
+    var name: String,
+
+    @ColumnInfo("cnt")
+    var cnt: Int,
+
+    @ColumnInfo("last_sync_ts")
+    var lastSyncTs: Int?,
+
+    @ColumnInfo("playlist_id")
+    var playlistId: Int?,
+
+    @ColumnInfo("is_need_sync")
+    var isNeedSync: Int
+
 
 ) {
 }

@@ -4,13 +4,18 @@ import com.core.download.DownloadConfig
 import com.core.download.HttpDownloadManagerImpl
 import com.core.download.HttpDownloadTask
 import com.core.download.HttpDownloadTaskListener
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 
 class HttpDownloadManagerImplTests {
 
     var dm: HttpDownloadManagerImpl = HttpDownloadManagerImpl(
-        DownloadConfig()
+        DownloadConfig(),
+        downloadFactory = null
     )
 
     @Test
@@ -38,8 +43,25 @@ class HttpDownloadManagerImplTests {
                 println("onCompleted")
             }
         }
-        dm.newTask(url = "http://music.163.com/song/media/outer/url?id=436346833");
-
+//        dm.newTask(url = "http://music.163.com/song/media/outer/url?id=436346833");
+//
         CountDownLatch(1).await()
+    }
+
+
+    @Test
+    fun test111() {
+       runBlocking {
+
+           launch {
+               coroutineScope {
+                   delay(4000)
+                   println("1111")
+               }
+           }
+
+
+           println("3333")
+       }
     }
 }

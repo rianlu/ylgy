@@ -12,13 +12,11 @@ import androidx.room.PrimaryKey
 data class SyncRecordSegment(
 
     @PrimaryKey(autoGenerate = true)
-    var id: Int,
+    var id: Int?,
     @ColumnInfo("record_id")
-    var recordId: String?,
+    var recordId: Int?,
     @ColumnInfo("source_id")
     var sourceId: Int?,
-    @ColumnInfo("source_part_id")
-    var sourcePartId: Int?,
     @ColumnInfo("url")
     var url: String?,
     @ColumnInfo("sync_start_ts")

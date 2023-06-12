@@ -3,12 +3,12 @@ package com.core.download
 interface HttpDownloadManager {
 
 
-    /**
-     * 任务列表
-     *
-     * @return 任务列表
-     */
-    fun tasks(): List<HttpDownloadTask>
+//    /**
+//     * 任务列表
+//     *
+//     * @return 任务列表
+//     */
+//    fun tasks(): List<HttpDownloadTask>
 
     /**
      * 新建一个任务
@@ -20,7 +20,8 @@ interface HttpDownloadManager {
     fun newTask(
         taskId: String? = null,
         url: String,
-        filePath: String? = null,
+        filePath: String,
+        fileName: String,
         offset: Long = 0,
         startImmediately: Boolean = true
     ): HttpDownloadTask

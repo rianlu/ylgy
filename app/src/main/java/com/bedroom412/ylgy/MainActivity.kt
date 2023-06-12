@@ -1,8 +1,14 @@
 package com.bedroom412.ylgy
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import com.bedroom412.ylgy.databinding.ActivityMainBinding
@@ -10,6 +16,8 @@ import com.bedroom412.ylgy.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    private lateinit var downloadBinder: DownloadService.DownloadBinder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,10 +28,31 @@ class MainActivity : AppCompatActivity() {
 
         binding.settingsBtn.setOnClickListener {  }
         binding.scanBtn.setOnClickListener {  }
-        binding.searchBtn.setOnClickListener {  }
+        binding.searchBtn.setOnClickListener {
+            downloadBinder.syncSource(1, listOf(
+                "http://music.163.com/song/media/outer/url?id=441491828",
+                "http://music.163.com/song/media/outer/url?id=436346833",
+                "http://music.163.com/song/media/outer/url?id=1867217766"
+            ))
+        }
         // 打开播放器
         binding.vinylRecordView.setOnClickListener {  }
-        binding.songCover.setOnClickListener {  }
+        binding.songCover.setOnClickListener {
+
+        }
+
+        var intent = Intent(this, DownloadService::class.java)
+        bindService(intent, object : ServiceConnection{
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                downloadBinder = service as DownloadService.DownloadBinder
+                Log.d("MainActivity", "Service bind ${name} ${downloadBinder}")
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+                Log.d("MainActivity", "Service unbind ${name}")
+            }
+
+        }, Context.BIND_AUTO_CREATE)
     }
 
     private fun initStatusBar() {

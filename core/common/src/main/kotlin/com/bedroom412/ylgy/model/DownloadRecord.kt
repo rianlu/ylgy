@@ -10,9 +10,9 @@ import androidx.room.PrimaryKey
 data class DownloadRecord(
 
     @PrimaryKey(autoGenerate = true)
-    var id: Int,
+    var id: Int?,
     @ColumnInfo("all_size")
-    var allSize: String?,
+    var allSize: Long?,
     @ColumnInfo("offset")
     var offset: Long?,
     @ColumnInfo("percent")
@@ -24,15 +24,15 @@ data class DownloadRecord(
     @ColumnInfo("http_header")
     var httpHeader: String?,
     @ColumnInfo("file_name")
-    var fileName: String?,
+    var fileName: String,
     @ColumnInfo("download_path")
-    var downloadPath: String?,
+    var downloadPath: String,
     @ColumnInfo("retry_times")
     var retryTimes: Int?,
     @ColumnInfo("status")
     var status: Int?,
     @ColumnInfo("url")
-    var url: String?,
+    var url: String,
 
     ) {
 }

@@ -24,7 +24,7 @@ class ImportSourceDaoTests {
 
     @Before
     fun createDb() {
-        val context: Context =  InstrumentationRegistry.getInstrumentation().targetContext
+        val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
 //        mDb = inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
         mDb = Room.databaseBuilder(context, AppDatabase::class.java, "test.db").build()
@@ -50,9 +50,15 @@ class ImportSourceDaoTests {
         run {
             println("testUpdate")
             val importSource = ImportSource(
+                id = null,
+                name = "",
+                url = "",
                 type = 1,
-                url = "http://",
-                id = null
+                isNeedSync = 0,
+                lastSyncTs = null,
+                playlistId = null,
+                // todo 数量
+                cnt = 0
             )
             if (this::mDb.isInitialized) {
                 dao!!.insert(importSource)

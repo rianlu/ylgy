@@ -5,12 +5,11 @@ import androidx.room.RoomDatabase
 import com.bedroom412.ylgy.model.Audio
 import com.bedroom412.ylgy.model.DownloadRecord
 import com.bedroom412.ylgy.model.ImportSource
-import com.bedroom412.ylgy.model.ImportSourcePart
-import com.bedroom412.ylgy.model.ImportSourcePartSyncRecord
+import com.bedroom412.ylgy.model.ImportSourceSyncRecord
 import com.bedroom412.ylgy.model.Lyric
 import com.bedroom412.ylgy.model.PlayList
 import com.bedroom412.ylgy.model.PlaylistAudioCrossRef
-import com.bedroom412.ylgy.model.SourcePartAudioCrossRef
+import com.bedroom412.ylgy.model.SourceAudioCrossRef
 import com.bedroom412.ylgy.model.SyncRecordSegment
 
 /**
@@ -22,12 +21,11 @@ import com.bedroom412.ylgy.model.SyncRecordSegment
         Audio::class,
         DownloadRecord::class,
         ImportSource::class,
-        ImportSourcePart::class,
-        ImportSourcePartSyncRecord::class,
+        ImportSourceSyncRecord::class,
         Lyric::class,
         PlayList::class,
         PlaylistAudioCrossRef::class,
-        SourcePartAudioCrossRef::class,
+        SourceAudioCrossRef::class,
         SyncRecordSegment::class], version = 1, exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -37,5 +35,8 @@ abstract class AppDatabase : RoomDatabase() {
      *
      * @return
      */
-    abstract fun importSourceDao(): ImportSourceDao?
+    abstract fun importSourceDao(): ImportSourceDao
+    abstract fun importSourceSyncRecordDao(): ImportSourceSyncRecordDao
+    abstract fun  syncRecordSegmentDao(): SyncRecordSegmentDao
+    abstract fun  downloadRecordDao(): DownloadRecordDao
 }

@@ -10,9 +10,9 @@ import androidx.room.Entity
  * @property sourcePartId
  * @property audioId
  */
-@Entity(tableName = "source_part_audio", primaryKeys = ["source_part_id", "audio_id"])
-data class SourcePartAudioCrossRef(
-    @ColumnInfo("source_part_id")
+@Entity(tableName = "source_audio", primaryKeys = ["source_id", "audio_id"])
+data class SourceAudioCrossRef(
+    @ColumnInfo("source_id")
     var sourcePartId: Int,
     @ColumnInfo("audio_id")
     var audioId: Int,

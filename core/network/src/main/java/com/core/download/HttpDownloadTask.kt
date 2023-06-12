@@ -1,18 +1,13 @@
 package com.core.download
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
+import java.io.File
 import java.io.InputStream
 import java.io.RandomAccessFile
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 
 //  (0_就绪_1_下载中_2_成功_3_暂停_4_失败
@@ -25,7 +20,7 @@ const val STATUS_ERROR = 4
 class HttpDownloadTask(
     var url: String,
     var filePath: String,
-    var fileName: String? = null,
+    var fileName: String,
     var offset: Long = 0,
     val taskId: String? = null,
     private var httpDownloadManagerRef: HttpDownloadManagerImpl,
@@ -58,8 +53,7 @@ class HttpDownloadTask(
         listeners = listeners + listener
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    fun startAsync() {
+    fun start() {
 
         val client = httpDownloadManagerRef.newClient()
 
@@ -76,9 +70,7 @@ class HttpDownloadTask(
         }
         val request = builder.build()
 
-        val job = GlobalScope.launch(Dispatchers.IO) {
-            doStart(client, request)
-        }
+        doStart(client, request)
     }
 
     private fun doStart(client: OkHttpClient, request: Request) {
@@ -88,12 +80,12 @@ class HttpDownloadTask(
         // TODO: 协程
         call = client.newCall(request)
 
-        var response: Response?
+        val response: Response?
         var gResponseBody: ResponseBody? = null
 
         try {
             response = call!!.execute()
-            resolveFileNameIfNecessary(response)
+//            resolveFileNameIfNecessary(response)
 
             gResponseBody = response.body()!!
 //            gResponseBody = responseBody
@@ -101,7 +93,7 @@ class HttpDownloadTask(
             val contentLength = gResponseBody.contentLength()
 
             val ins: InputStream = gResponseBody.byteStream()
-            val accessFile = RandomAccessFile("${filePath}/${fileName}", "rw")
+            val accessFile = RandomAccessFile(File(filePath, fileName), "rw")
 
             accessFile.seek(offset)
 
@@ -142,17 +134,6 @@ class HttpDownloadTask(
         status = STATUS_SUCCESS
         finished();
         response?.body()!!.close()
-    }
-
-    private fun resolveFileNameIfNecessary(response: Response) {
-        val contentDispositionHeader = response.header("Content-Disposition")
-        if (contentDispositionHeader != null) {
-            val matcher: Matcher =
-                Pattern.compile("filename=\"?([^\"]+)\"?").matcher(contentDispositionHeader)
-            if (matcher.find()) {
-                fileName = matcher.group(1) as String
-            }
-        }
     }
 
     fun isReady(status: Int): Boolean {

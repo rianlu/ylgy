@@ -8,15 +8,13 @@ import androidx.room.PrimaryKey
 /**
  * 导入记录
  */
-@Entity(tableName = "import_source_part_sync_record")
-data class ImportSourcePartSyncRecord(
+@Entity(tableName = "import_source_sync_record")
+data class ImportSourceSyncRecord(
 
     @PrimaryKey(autoGenerate = true)
-    var id: Int,
+    var id: Int?,
     @ColumnInfo("source_id")
     var sourceId: Int?,
-    @ColumnInfo("source_part_id")
-    var sourcePartId: Int?,
     @ColumnInfo("status")
     var status: Int?,
     @ColumnInfo("percent")

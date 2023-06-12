@@ -15,9 +15,8 @@ class ImportSourceParser(
     }
 
 
-
     private fun parseJson() {
-       //
+        //
     }
 
     private fun parseUrls() {
