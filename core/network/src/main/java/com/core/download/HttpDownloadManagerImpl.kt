@@ -1,6 +1,7 @@
 package com.core.download
 
 import android.util.Log
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -8,9 +9,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import java.io.File
-import java.util.concurrent.LinkedBlockingDeque
+import java.util.LinkedList
 import java.util.concurrent.Semaphore
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
 class HttpDownloadManagerImpl(
@@ -22,40 +22,56 @@ class HttpDownloadManagerImpl(
     private var TAG = "HttpDownloadManager"
     private var totalReceiveBytes = AtomicLong(0)
     private var totalTimeUsed = AtomicLong(0)
-    private val downloadQueue = LinkedBlockingDeque<HttpDownloadTask>()
-    private val downloadingQueue = LinkedBlockingDeque<HttpDownloadTask>()
+    private val downloadQueue = LinkedList<HttpDownloadTask>()
+    private val downloadingQueue = LinkedList<HttpDownloadTask>()
+
+    private val haveTaskToHandle = Object()
+
 
     private val maxConcurrentDownloads = Semaphore(downloadConfig.maxConcurrentDownloads)
 
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
-
     private var isStart = false
 
-    init {
+    fun init() {
         listeners += StatHttpDownloadTaskListener(this)
+        downloadFactory?.getTasks()?.let {
+            downloadQueue.addAll(it)
+        };
+
+        synchronized(haveTaskToHandle){
+            haveTaskToHandle.notify()
+        }
+
     }
-
-
     fun start() {
         scope.launch {
-            Log.d(TAG, "HttpDownloadManagerImpl started...")
-            isStart = true
-            while (isStart) {
-                maxConcurrentDownloads.acquire()
-                var task: HttpDownloadTask? = null
+            try {
+                Log.d(TAG, "HttpDownloadManagerImpl started...")
+                isStart = true
+                while (isStart) {
 
-                if ((downloadQueue.isNotEmpty() && downloadQueue.poll(
-                        3000,
-                        TimeUnit.MILLISECONDS
-                    )?.also { task = it } != null) || downloadFactory?.acquireTask()
-                        ?.also { task = it } != null
-                ) {
-                    // execute task
-                    withContext(Dispatchers.IO) {
-                        task!!.start()
+                    maxConcurrentDownloads.acquire()
+                    var task: HttpDownloadTask? = null
+
+                    downloadQueue.firstOrNull {
+                        it.status == STATUS_READY
+                    }?.let {
+                        // execute task
+                        withContext(Dispatchers.IO) {
+                            task!!.start()
+                        }
+                    } ?: {
+                        synchronized(haveTaskToHandle){
+                            haveTaskToHandle.wait()
+                        }
                     }
                 }
+            } catch (e: CancellationException) {
+                isStart = false
+                Log.d(TAG, "HttpDownloadManagerImpl canceled...")
+                stop()
             }
         }
     }
@@ -64,14 +80,13 @@ class HttpDownloadManagerImpl(
     fun stop() {
         isStart = false;
         pauseAll();
-        Log.d(TAG, "HttpDownloadManagerImpl stop...")
+        Log.d(TAG, "HttpDownloadManagerImpl stopped...")
     }
 
     private fun pauseAll() {
         downloadingQueue.forEach {
             it.pause()
         }
-        downloadingQueue.clear()
     }
 
     fun newClient(): OkHttpClient {
@@ -89,8 +104,8 @@ class HttpDownloadManagerImpl(
         fileName: String,
         offset: Long,
         startImmediately: Boolean,
-
-        ): HttpDownloadTask {
+        attachment: Any?,
+    ): HttpDownloadTask {
 
         val httpDownloadTask = hookTask(
             HttpDownloadTask(
@@ -99,7 +114,8 @@ class HttpDownloadManagerImpl(
                 filePath = filePath,
                 fileName = fileName,
                 offset = offset,
-                httpDownloadManagerRef = this
+                httpDownloadManagerRef = this,
+                attachment = attachment,
             )
         )
 
@@ -107,6 +123,7 @@ class HttpDownloadManagerImpl(
             httpDownloadTask.start()
         } else {
             downloadQueue.offer(httpDownloadTask)
+            haveTaskToHandle.notify()
         }
         return httpDownloadTask
     }
@@ -114,6 +131,7 @@ class HttpDownloadManagerImpl(
     override fun startTask(task: HttpDownloadTask): HttpDownloadTask {
         val t = hookTask(task);
         downloadQueue.offer(t)
+        haveTaskToHandle.notify()
         return t
     }
 

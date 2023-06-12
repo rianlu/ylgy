@@ -23,7 +23,8 @@ interface HttpDownloadManager {
         filePath: String,
         fileName: String,
         offset: Long = 0,
-        startImmediately: Boolean = true
+        startImmediately: Boolean = true,
+        attachment: Any?,
     ): HttpDownloadTask
 
     /**

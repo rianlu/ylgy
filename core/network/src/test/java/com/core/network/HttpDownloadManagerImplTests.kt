@@ -4,10 +4,12 @@ import com.core.download.DownloadConfig
 import com.core.download.HttpDownloadManagerImpl
 import com.core.download.HttpDownloadTask
 import com.core.download.HttpDownloadTaskListener
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 
@@ -58,6 +60,13 @@ class HttpDownloadManagerImplTests {
                    delay(4000)
                    println("1111")
                }
+
+               withContext(Dispatchers.IO){
+                   delay(1000)
+                   println("44444")
+               }
+
+               println("5555")
            }
 
 

@@ -23,6 +23,7 @@ class HttpDownloadTask(
     var fileName: String,
     var offset: Long = 0,
     val taskId: String? = null,
+    var attachment: Any ? = null,
     private var httpDownloadManagerRef: HttpDownloadManagerImpl,
 ) {
 
@@ -38,7 +39,6 @@ class HttpDownloadTask(
         } else if (isSuccess(status)) {
             return false
         }
-        call?.cancel();
         status = STATUS_PAUSED
         return true
     }
