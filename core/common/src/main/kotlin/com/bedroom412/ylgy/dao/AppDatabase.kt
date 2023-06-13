@@ -37,6 +37,8 @@ abstract class AppDatabase : RoomDatabase() {
      */
     abstract fun importSourceDao(): ImportSourceDao
     abstract fun importSourceSyncRecordDao(): ImportSourceSyncRecordDao
-    abstract fun  syncRecordSegmentDao(): SyncRecordSegmentDao
-    abstract fun  downloadRecordDao(): DownloadRecordDao
+    abstract fun syncRecordSegmentDao(): SyncRecordSegmentDao
+    abstract fun downloadRecordDao(): DownloadRecordDao
+
+    abstract fun playListDao(): PlayListDao
 }

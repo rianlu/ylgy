@@ -12,6 +12,9 @@ interface ImportSourceDao {
     @Query("SELECT * FROM import_source WHERE id = :id")
     fun getById(id: Int): ImportSource
 
+    @Query("SELECT * FROM import_source order by id asc")
+    fun getAll(): List<ImportSource>?
+
     @Update
     fun update(vararg arr: ImportSource): Int
 

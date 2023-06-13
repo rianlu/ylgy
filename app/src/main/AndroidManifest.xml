@@ -16,7 +16,9 @@
         <activity
             android:name=".activity.DownloadActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".activity.SourceActivity"
+            android:exported="false" />
         <service
             android:name=".DownloadService"
             android:enabled="true"

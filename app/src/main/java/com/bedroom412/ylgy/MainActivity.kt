@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import com.bedroom412.ylgy.activity.DownloadActivity
+import com.bedroom412.ylgy.activity.SourceActivity
 import com.bedroom412.ylgy.dao.AppDatabase
 import com.bedroom412.ylgy.databinding.ActivityMainBinding
 import com.core.download.HttpDownloadManagerImpl
@@ -45,21 +46,8 @@ class MainActivity : AppCompatActivity() {
         // 打开播放器
         binding.vinylRecordView.setOnClickListener { }
         binding.songCover.setOnClickListener {
-
+            startActivity(Intent(this, SourceActivity::class.java))
         }
-
-        var intent = Intent(this, DownloadService::class.java)
-        bindService(intent, object : ServiceConnection {
-            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                downloadBinder = service as DownloadService.DownloadBinder
-                Log.d("MainActivity", "Service bind ${name} ${downloadBinder}")
-            }
-
-            override fun onServiceDisconnected(name: ComponentName?) {
-                Log.d("MainActivity", "Service unbind ${name}")
-            }
-
-        }, Context.BIND_AUTO_CREATE)
     }
 
     private fun initStatusBar() {

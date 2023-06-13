@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/source_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_scan"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/source_icon"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <!--   标签         -->
+            <TextView
+                android:id="@+id/sourceName_TV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="https://example.com" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/sourceCount_TV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="50首" />
+
+
+                <TextView
+                    android:id="@+id/playListName_TV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="我喜爱的" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center|left"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="上次同步时间" />
+
+
+                <TextView
+                    android:id="@+id/lastSyncTime_TV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2023-02-02 11:22:22" />
+
+
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/sourceSync_PB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="100"
+                android:progress="30"
+                >
+
+            </ProgressBar>
+
+            <Button
+                android:id="@+id/sourceSync_Btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="同步">
+
+            </Button>
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

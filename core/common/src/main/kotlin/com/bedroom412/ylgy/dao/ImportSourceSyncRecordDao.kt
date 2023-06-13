@@ -10,8 +10,10 @@ import com.bedroom412.ylgy.model.ImportSourceSyncRecord
 interface ImportSourceSyncRecordDao {
 
     @Query("SELECT * FROM import_source_sync_record WHERE source_id = :sourceId")
-    fun getById(sourceId: Int): ImportSourceSyncRecord
+    fun getBySourceId(sourceId: Int): ImportSourceSyncRecord
 
     @Insert
     fun insert(importSourceSyncRecord: ImportSourceSyncRecord):Long
+//
+//    fun getBySourceId(sourceId : Int?): ImportSourceSyncRecord
 }

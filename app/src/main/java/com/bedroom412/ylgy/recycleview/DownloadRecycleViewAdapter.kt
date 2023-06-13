@@ -28,7 +28,7 @@ class DownloadRecycleViewAdapter(val vm: DownloadViewModel) :
     override fun onBindViewHolder(holder: DownloadRecycleViewHolder, position: Int) {
         vm.data.value?.let {
             val downloadRecord: DownloadRecord = it[position];
-            holder._binding.percentTV.text = downloadRecord.percent?.toString() ?: "N/A"
+            holder._binding.percentTV.text = downloadRecord.percent?.toString() ?: "0.00%"
             holder._binding.titleTV.text = downloadRecord.fileName
         }
     }

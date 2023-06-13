@@ -21,10 +21,10 @@ data class ImportSource(
     @ColumnInfo("type")
     var type: Int?,
     @ColumnInfo("name")
-    var name: String,
+    var name: String?,
 
     @ColumnInfo("cnt")
-    var cnt: Int,
+    var cnt: Int?,
 
     @ColumnInfo("last_sync_ts")
     var lastSyncTs: Int?,
