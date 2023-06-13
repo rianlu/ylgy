@@ -4,19 +4,31 @@ import com.bedroom412.ylgy.model.DownloadRecord
 import com.core.download.HttpDownloadFactory
 import com.core.download.HttpDownloadManagerImpl
 import com.core.download.HttpDownloadTask
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class YlgyHttpDownloadFactory(
     var httpDownloadManagerImpl: HttpDownloadManagerImpl
 ) : HttpDownloadFactory {
 
-    var downloadRecordLists: List<DownloadRecord>? = mutableListOf()
+    var downloadRecordLists: List<DownloadRecord> = mutableListOf()
 
     init {
-        downloadRecordLists = YglyApplication.instance.db.downloadRecordDao().getAll()
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                downloadRecordLists = YglyApplication.instance.db.downloadRecordDao().getAll()?: mutableListOf()
+            }
+        }
+    }
+
+
+    fun geAllTasks(): List<DownloadRecord> {
+        return downloadRecordLists
     }
 
     override fun getTasks(): List<HttpDownloadTask>? {
-        return downloadRecordLists?.map { downloadRecord ->
+        return downloadRecordLists.map { downloadRecord ->
             HttpDownloadTask(
                 taskId = downloadRecord.id?.toString(),
                 url = downloadRecord.url,
@@ -30,7 +42,7 @@ class YlgyHttpDownloadFactory(
 
     fun addTask(downloadRecord: DownloadRecord) {
 
-        downloadRecordLists = downloadRecordLists!!.plus(downloadRecord)
+        downloadRecordLists = downloadRecordLists.plus(downloadRecord)
         httpDownloadManagerImpl.newTask(
             taskId = downloadRecord.id.toString(),
             url = downloadRecord.url,

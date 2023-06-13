@@ -46,6 +46,11 @@ class HttpDownloadManagerImpl(
 
     }
     fun start() {
+
+        if (isStart) {
+          return
+        }
+
         scope.launch {
             try {
                 Log.d(TAG, "HttpDownloadManagerImpl started...")
@@ -53,14 +58,16 @@ class HttpDownloadManagerImpl(
                 while (isStart) {
 
                     maxConcurrentDownloads.acquire()
-                    var task: HttpDownloadTask? = null
 
                     downloadQueue.firstOrNull {
                         it.status == STATUS_READY
                     }?.let {
+                        downloadQueue.remove(it)
+                        downloadingQueue.offer(it)
                         // execute task
-                        withContext(Dispatchers.IO) {
-                            task!!.start()
+                        launch(Dispatchers.IO) {
+                            Log.d(TAG, "task begin ${it}")
+                            it.start()
                         }
                     } ?: {
                         synchronized(haveTaskToHandle){
@@ -123,7 +130,10 @@ class HttpDownloadManagerImpl(
             httpDownloadTask.start()
         } else {
             downloadQueue.offer(httpDownloadTask)
-            haveTaskToHandle.notify()
+            synchronized(haveTaskToHandle){
+                haveTaskToHandle.notify()
+            }
+
         }
         return httpDownloadTask
     }
@@ -131,7 +141,9 @@ class HttpDownloadManagerImpl(
     override fun startTask(task: HttpDownloadTask): HttpDownloadTask {
         val t = hookTask(task);
         downloadQueue.offer(t)
-        haveTaskToHandle.notify()
+        synchronized(haveTaskToHandle){
+            haveTaskToHandle.notify()
+        }
         return t
     }
 

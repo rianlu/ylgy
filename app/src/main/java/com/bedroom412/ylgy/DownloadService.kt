@@ -4,10 +4,14 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import androidx.room.Room
+import com.bedroom412.ylgy.dao.AppDatabase
 import com.bedroom412.ylgy.model.DownloadRecord
 import com.bedroom412.ylgy.model.ImportSourceSyncRecord
 import com.bedroom412.ylgy.model.SyncRecordSegment
+import com.core.download.DownloadConfig
 import com.core.download.HttpClientFactory
+import com.core.download.HttpDownloadManagerImpl
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -19,18 +23,43 @@ import java.util.TimerTask
 class DownloadService : Service() {
     var timer = Timer();
 
+
+//    lateinit var httpDownloadManagerImpl: HttpDownloadManagerImpl
+
+
+
+    companion object{
+        lateinit var httpDownloadManagerImpl: HttpDownloadManagerImpl
+        lateinit var db: AppDatabase
+    }
+
     override fun onCreate() {
         super.onCreate()
-        YglyApplication.instance.httpDownloadManagerImpl.start()
+
+        // 初始化数据库
+        db = YglyApplication.instance.db
+        // 初始化下载
+        httpDownloadManagerImpl =
+            HttpDownloadManagerImpl(
+                DownloadConfig(),
+                downloadFactory = null
+            )
+
+        val downloadFactory  = YlgyHttpDownloadFactory(
+            httpDownloadManagerImpl
+        )
+        httpDownloadManagerImpl.downloadFactory = downloadFactory
+
+        httpDownloadManagerImpl.init()
+
+        httpDownloadManagerImpl.start()
         var timer = Timer()
 
-        // 定义您要定期运行的任务
 
-        // 定义您要定期运行的任务
         var task = object : TimerTask() {
             override fun run() {
                 var ylgyHttpDownloadFactory =
-                    YglyApplication.instance.httpDownloadManagerImpl.downloadFactory as YlgyHttpDownloadFactory
+                    httpDownloadManagerImpl.downloadFactory as YlgyHttpDownloadFactory
                 ylgyHttpDownloadFactory.updateAll()
             }
         }
@@ -49,9 +78,9 @@ class DownloadService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         timer.cancel()
-        YglyApplication.instance.httpDownloadManagerImpl.stop()
+        httpDownloadManagerImpl.stop()
         var ylgyHttpDownloadFactory =
-            YglyApplication.instance.httpDownloadManagerImpl.downloadFactory as YlgyHttpDownloadFactory
+            httpDownloadManagerImpl.downloadFactory as YlgyHttpDownloadFactory
         ylgyHttpDownloadFactory.updateAll()
     }
 
@@ -64,7 +93,7 @@ class DownloadService : Service() {
 
             val httpInfo = HttpClientFactory.getMeta(url)
             val generateUniqueFileName =
-                YglyApplication.instance.httpDownloadManagerImpl.generateUniqueFileName(
+                DownloadService.httpDownloadManagerImpl.generateUniqueFileName(
                     httpInfo.fileName
                 )
             var downloadRecord = DownloadRecord(
@@ -76,13 +105,13 @@ class DownloadService : Service() {
                 httpAgent = null,
                 httpHeader = null,
                 fileName = generateUniqueFileName,
-                downloadPath = YglyApplication.instance.httpDownloadManagerImpl.downloadConfig.downloadPath,
+                downloadPath = httpDownloadManagerImpl.downloadConfig.downloadPath,
                 retryTimes = 0,
                 status = 0,
                 url = httpInfo.url,
             )
 
-            (YglyApplication.instance.httpDownloadManagerImpl.downloadFactory as YlgyHttpDownloadFactory).addTask(
+            (httpDownloadManagerImpl.downloadFactory as YlgyHttpDownloadFactory).addTask(
                 downloadRecord
             );
         }
@@ -93,9 +122,9 @@ class DownloadService : Service() {
             GlobalScope.async(Dispatchers.IO) {
 
                 var importSource =
-                    YglyApplication.instance.db.importSourceDao().getById(sourceId)
+                    db.importSourceDao().getById(sourceId)
 
-                val recordId = YglyApplication.instance.db.importSourceSyncRecordDao().insert(
+                val recordId = db.importSourceSyncRecordDao().insert(
                     ImportSourceSyncRecord(
                         id = null,
                         sourceId = sourceId,
@@ -124,14 +153,14 @@ class DownloadService : Service() {
                         audioId = null,
                         status = null,
                     )
-                    var segmentIds = YglyApplication.instance.db.syncRecordSegmentDao()
+                    var segmentIds = db.syncRecordSegmentDao()
                         .insert(segment)
 
                     segment.id = segmentIds[0].toInt()
 
 
                     val generateUniqueFileName =
-                        YglyApplication.instance.httpDownloadManagerImpl.generateUniqueFileName(
+                        httpDownloadManagerImpl.generateUniqueFileName(
                             httpInfo.fileName
                         )
 
@@ -144,21 +173,21 @@ class DownloadService : Service() {
                         httpAgent = null,
                         httpHeader = null,
                         fileName = generateUniqueFileName,
-                        downloadPath = YglyApplication.instance.httpDownloadManagerImpl.downloadConfig.downloadPath,
+                        downloadPath = httpDownloadManagerImpl.downloadConfig.downloadPath,
                         retryTimes = 0,
                         status = 0,
                         url = httpInfo.url,
                     )
 
-                    val dlIds = YglyApplication.instance.db.downloadRecordDao()
+                    val dlIds = db.downloadRecordDao()
                         .insert(downloadRecord)
 
                     segment.downloadId = dlIds[0].toInt()
 
-                    YglyApplication.instance.db.syncRecordSegmentDao()
+                    db.syncRecordSegmentDao()
                         .update(segment)
 
-                    (YglyApplication.instance.httpDownloadManagerImpl.downloadFactory as YlgyHttpDownloadFactory).addTask(
+                    (httpDownloadManagerImpl.downloadFactory as YlgyHttpDownloadFactory).addTask(
                         downloadRecord
                     );
 
