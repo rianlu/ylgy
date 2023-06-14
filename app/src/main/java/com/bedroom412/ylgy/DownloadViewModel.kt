@@ -10,16 +10,11 @@ class DownloadViewModel : ViewModel(
 
     val data: MutableLiveData<List<DownloadRecord>> =
         MutableLiveData<List<DownloadRecord>>().apply {
-            value = geAllTasks()
+            value = DownloadService.bulgyHttpDownloadRepository.downloadRecordLists
         }
 
-    private fun geAllTasks(): List<DownloadRecord> {
-        var ylgyHttpDownloadFactory =
-            DownloadService.httpDownloadManagerImpl.downloadFactory as YlgyHttpDownloadFactory
-        return ylgyHttpDownloadFactory.geAllTasks();
-    }
 
     fun updateAll() {
-        data.value = geAllTasks()
+        data.value = DownloadService.bulgyHttpDownloadRepository.downloadRecordLists
     }
 }

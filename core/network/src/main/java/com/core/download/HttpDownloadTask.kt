@@ -1,5 +1,6 @@
 package com.core.download
 
+import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -23,10 +24,12 @@ class HttpDownloadTask(
     var fileName: String,
     var offset: Long = 0,
     val taskId: String? = null,
-    var attachment: Any ? = null,
+    var attachment: Any? = null,
     private var httpDownloadManagerRef: HttpDownloadManagerImpl,
 ) {
 
+
+    var rateLimiter:RateLimiter?=null
     @Volatile
     var status = STATUS_READY
 
@@ -34,13 +37,15 @@ class HttpDownloadTask(
     var listeners: List<HttpDownloadTaskListener> = mutableListOf()
 
     fun pause(): Boolean {
-        if (isPaused(status)) {
+        synchronized(this) {
+            if (isPaused(status)) {
+                return true
+            } else if (isSuccess(status)) {
+                return false
+            }
+            status = STATUS_PAUSED
             return true
-        } else if (isSuccess(status)) {
-            return false
         }
-        status = STATUS_PAUSED
-        return true
     }
 
 
@@ -53,24 +58,28 @@ class HttpDownloadTask(
         listeners = listeners + listener
     }
 
-    fun start() {
-
-        val client = httpDownloadManagerRef.newClient()
-
-        /*   client.interceptors().add(object : Interceptor {
-               override fun intercept(chain: Interceptor.Chain): Response {
-                   val response = this.intercept(chain)
-                   return decorateResponse(response, chain)
-               }
-           })*/
-        var builder = Request.Builder()
-        builder.url(url)
-        if (offset > 0) {
-            builder.header("Range", "bytes=${offset}-")
+     fun start() {
+        synchronized(this) {
+            if (isDownloading(status)) {
+                return
+            }
+            try {
+                val client = httpDownloadManagerRef.newClient()
+                val builder = Request.Builder()
+                builder.url(url)
+                if (offset > 0) {
+                    builder.header("Range", "bytes=${offset}-")
+                }
+                val request = builder.build()
+                doStart(client, request)
+            } catch (e: Exception) {
+                if (isSuccess(status)) {
+                    return
+                }
+                status = STATUS_ERROR
+                error(e)
+            }
         }
-        val request = builder.build()
-
-        doStart(client, request)
     }
 
     private fun doStart(client: OkHttpClient, request: Request) {
@@ -82,6 +91,13 @@ class HttpDownloadTask(
 
         val response: Response?
         var gResponseBody: ResponseBody? = null
+        var readBytes = offset
+        var contentLength = -1L
+
+        status = STATUS_DOWNLOADING
+
+        call = client.newCall(request)
+
 
         try {
             response = call!!.execute()
@@ -90,7 +106,7 @@ class HttpDownloadTask(
             gResponseBody = response.body()!!
 //            gResponseBody = responseBody
 
-            val contentLength = gResponseBody.contentLength()
+            contentLength = gResponseBody.contentLength()
 
             val ins: InputStream = gResponseBody.byteStream()
             val accessFile = RandomAccessFile(File(filePath, fileName), "rw")
@@ -98,13 +114,18 @@ class HttpDownloadTask(
             accessFile.seek(offset)
 
             //Specify the size of the cache buffer for 4MB.
-            val b = ByteArray(4 * 1024 * 1024)
-            var readBytes = offset
+            val b = ByteArray( 1024)
+
             var len: Int
             //   每次读取的字节长度
             while (status == STATUS_DOWNLOADING) {
 
                 var sMillis = System.currentTimeMillis()
+
+                runBlocking {
+                    rateLimiter?.acquire(1024)
+                }
+
                 if ((ins.read(b).also { len = it } == -1)) {
                     break
                 }
@@ -127,13 +148,13 @@ class HttpDownloadTask(
 
         // if paused through there
         if (isPaused(status)) {
-            paused()
+            paused(readBytes, contentLength)
             return
         }
 
         status = STATUS_SUCCESS
         finished();
-        response?.body()!!.close()
+        gResponseBody.close()
     }
 
     fun isReady(status: Int): Boolean {
@@ -174,9 +195,9 @@ class HttpDownloadTask(
         }
     }
 
-    private fun paused() {
+    private fun paused( totalReadBytes: Long, contentLength: Long,) {
         for (listener in listeners) {
-            listener.onPaused(this)
+            listener.onPaused(this, totalReadBytes, contentLength)
         }
     }
 

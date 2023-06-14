@@ -33,6 +33,10 @@ data class DownloadRecord(
     var status: Int?,
     @ColumnInfo("url")
     var url: String,
+    @ColumnInfo("tart_ts")
+    var startTs: Long?,
+    @ColumnInfo("end_ts")
+    var endTs: Long?,
 
     ) {
 }

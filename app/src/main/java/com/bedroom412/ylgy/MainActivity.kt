@@ -21,8 +21,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var downloadBinder: DownloadService.DownloadBinder
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -35,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, DownloadActivity::class.java))
         }
         binding.searchBtn.setOnClickListener {
-            downloadBinder.syncSource(
+            YglyApplication.instance.downloadBinder.syncSource(
                 1, listOf(
                     "http://music.163.com/song/media/outer/url?id=441491828",
                     "http://music.163.com/song/media/outer/url?id=436346833",

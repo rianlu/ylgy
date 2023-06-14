@@ -16,8 +16,7 @@ import java.util.concurrent.CountDownLatch
 class HttpDownloadManagerImplTests {
 
     var dm: HttpDownloadManagerImpl = HttpDownloadManagerImpl(
-        DownloadConfig(),
-        downloadFactory = null
+        DownloadConfig()
     )
 
     @Test

@@ -9,24 +9,27 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import java.io.File
-import java.util.LinkedList
+import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.Semaphore
 import java.util.concurrent.atomic.AtomicLong
 
 class HttpDownloadManagerImpl(
     var downloadConfig: DownloadConfig,
     var listeners: List<HttpDownloadTaskListener> = mutableListOf(),
-    var downloadFactory: HttpDownloadFactory?
+    var managerListener: List<HttpDownloadManagerListener> = mutableListOf(),
 ) : HttpDownloadManager {
 
     private var TAG = "HttpDownloadManager"
+
     private var totalReceiveBytes = AtomicLong(0)
+
     private var totalTimeUsed = AtomicLong(0)
-    private val downloadQueue = LinkedList<HttpDownloadTask>()
-    private val downloadingQueue = LinkedList<HttpDownloadTask>()
 
-    private val haveTaskToHandle = Object()
+    // ready queue
+    private val downloadQueue = LinkedBlockingQueue<HttpDownloadTask>()
 
+    // downloading queue
+    private val downloadingQueue = LinkedBlockingQueue<HttpDownloadTask>()
 
     private val maxConcurrentDownloads = Semaphore(downloadConfig.maxConcurrentDownloads)
 
@@ -34,21 +37,43 @@ class HttpDownloadManagerImpl(
 
     private var isStart = false
 
-    fun init() {
-        listeners += StatHttpDownloadTaskListener(this)
-        downloadFactory?.getTasks()?.let {
-            downloadQueue.addAll(it)
-        };
+    private lateinit var rateLimiter: RateLimiter
 
-        synchronized(haveTaskToHandle){
-            haveTaskToHandle.notify()
-        }
-
+    init {
+        rateLimiter = RateLimiter(downloadConfig.bytesPerSecond?:Double.MAX_VALUE)
     }
+
+
+    private val statHttpDownloadTaskListener = StatHttpDownloadTaskListener(this)
+
+    fun registerListener(listener: HttpDownloadTaskListener) {
+        if (listener !in listeners) {
+            listeners += listener
+        }
+    }
+
+    fun unRegisterListener(listener: HttpDownloadTaskListener) {
+        if (listener in listeners) {
+            listeners -= listener
+        }
+    }
+
+    fun registerManagerListener(listener: HttpDownloadManagerListener) {
+        if (listener !in managerListener) {
+            managerListener += listener
+        }
+    }
+
+    fun unRegisterManagerListener(listener: HttpDownloadManagerListener) {
+        if (listener in managerListener) {
+            managerListener -= listener
+        }
+    }
+
     fun start() {
 
         if (isStart) {
-          return
+            return
         }
 
         scope.launch {
@@ -56,24 +81,25 @@ class HttpDownloadManagerImpl(
                 Log.d(TAG, "HttpDownloadManagerImpl started...")
                 isStart = true
                 while (isStart) {
-
-                    maxConcurrentDownloads.acquire()
-
-                    downloadQueue.firstOrNull {
-                        it.status == STATUS_READY
-                    }?.let {
-                        downloadQueue.remove(it)
-                        downloadingQueue.offer(it)
-                        // execute task
-                        launch(Dispatchers.IO) {
-                            Log.d(TAG, "task begin ${it}")
-                            it.start()
-                        }
-                    } ?: {
-                        synchronized(haveTaskToHandle){
-                            haveTaskToHandle.wait()
+                    withContext(Dispatchers.IO) {
+                        maxConcurrentDownloads.acquire()
+                        downloadQueue.take().let {
+                            if (it.isReady(it.status)) {
+                                synchronized(it) {
+                                    if (it.isReady(it.status)) {
+                                        downloadQueue.remove(it)
+                                        downloadingQueue.offer(it)
+                                        // execute task
+                                        launch {
+                                            Log.d(TAG, "task begin ${it}")
+                                            it.start()
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
+
                 }
             } catch (e: CancellationException) {
                 isStart = false
@@ -91,9 +117,11 @@ class HttpDownloadManagerImpl(
     }
 
     private fun pauseAll() {
+        downloadQueue.clear()
         downloadingQueue.forEach {
             it.pause()
         }
+        downloadingQueue.clear()
     }
 
     fun newClient(): OkHttpClient {
@@ -130,34 +158,26 @@ class HttpDownloadManagerImpl(
             httpDownloadTask.start()
         } else {
             downloadQueue.offer(httpDownloadTask)
-            synchronized(haveTaskToHandle){
-                haveTaskToHandle.notify()
-            }
-
         }
         return httpDownloadTask
     }
 
-    override fun startTask(task: HttpDownloadTask): HttpDownloadTask {
+    override fun newTask(task: HttpDownloadTask) {
         val t = hookTask(task);
         downloadQueue.offer(t)
-        synchronized(haveTaskToHandle){
-            haveTaskToHandle.notify()
-        }
-        return t
     }
 
 
-    override fun pauseTask(task: HttpDownloadTask): HttpDownloadTask {
+    override fun pauseTask(task: HttpDownloadTask) {
         val t = hookTask(task);
         t.pause()
-        return t
     }
 
     private fun hookTask(task: HttpDownloadTask): HttpDownloadTask {
         for (listener in listeners) {
             task.addListener(listener)
         }
+        task.addListener(statHttpDownloadTaskListener)
         return task
     }
 
@@ -180,32 +200,38 @@ class HttpDownloadManagerImpl(
         }
 
         override fun onCompleted(task: HttpDownloadTask) {
-            httpDownloadManagerImpl.downloadingQueue.filter { it.taskId.equals(task.taskId) }.also {
-                httpDownloadManagerImpl.downloadingQueue.removeAll(
-                    it
-                )
-            }
-            httpDownloadManagerImpl.maxConcurrentDownloads.release()
+            removeTaskInDownloading(task)
+            notifyCompleteTaskEventIfNecessary()
         }
+
 
         override fun onError(task: HttpDownloadTask, ex: Throwable) {
+            removeTaskInDownloading(task)
+            notifyCompleteTaskEventIfNecessary()
+        }
+
+        override fun onPaused(task: HttpDownloadTask, totalReadBytes: Long, contentLength: Long) {
+            removeTaskInDownloading(task)
+            notifyCompleteTaskEventIfNecessary()
+        }
+
+        fun removeTaskInDownloading(task: HttpDownloadTask) {
             httpDownloadManagerImpl.downloadingQueue.filter { it.taskId.equals(task.taskId) }.also {
                 httpDownloadManagerImpl.downloadingQueue.removeAll(
                     it
                 )
+                httpDownloadManagerImpl.maxConcurrentDownloads.release(it.size)
             }
-            httpDownloadManagerImpl.maxConcurrentDownloads.release()
-
         }
 
-        override fun onPaused(task: HttpDownloadTask) {
-            httpDownloadManagerImpl.downloadingQueue.filter { it.taskId.equals(task.taskId) }.also {
-                httpDownloadManagerImpl.downloadingQueue.removeAll(
-                    it
-                )
+        private fun notifyCompleteTaskEventIfNecessary() {
+            if (httpDownloadManagerImpl.downloadingQueue.isEmpty() && httpDownloadManagerImpl.downloadQueue.isEmpty()) {
+                for (listener in httpDownloadManagerImpl.managerListener) {
+                    listener.onCompleteAll()
+                }
             }
-            httpDownloadManagerImpl.maxConcurrentDownloads.release()
         }
+
     }
 
 

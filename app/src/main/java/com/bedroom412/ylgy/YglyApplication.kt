@@ -9,18 +9,13 @@ import android.os.IBinder
 import android.util.Log
 import androidx.room.Room
 import com.bedroom412.ylgy.dao.AppDatabase
-import com.bedroom412.ylgy.model.DownloadRecord
-import com.core.download.DownloadConfig
-import com.core.download.HttpDownloadFactory
-import com.core.download.HttpDownloadManagerImpl
-import com.core.download.HttpDownloadTask
 
 class YglyApplication : Application() {
 
     private var TAG = "YglyApplication"
 
 
-    private lateinit var downloadBinder: DownloadService.DownloadBinder
+    lateinit var downloadBinder: DownloadService.DownloadBinder
 
     lateinit var db: AppDatabase
     private var connection: ServiceConnection? = null

@@ -16,7 +16,7 @@ interface HttpDownloadTaskListener {
 
     }
 
-    fun onPaused(task: HttpDownloadTask) {
+    fun onPaused(task: HttpDownloadTask,  totalReadBytes: Long, contentLength: Long) {
 
     }
 

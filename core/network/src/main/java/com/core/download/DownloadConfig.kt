@@ -4,6 +4,7 @@ import java.util.concurrent.Semaphore
 
 class DownloadConfig(
     val downloadPath: String = "/downloads",
-    val maxConcurrentDownloads:Int = 5
+    val maxConcurrentDownloads:Int = 5,
+    var bytesPerSecond:Double?=null,
 ) {
 }

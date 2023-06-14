@@ -2,14 +2,6 @@ package com.core.download
 
 interface HttpDownloadManager {
 
-
-//    /**
-//     * 任务列表
-//     *
-//     * @return 任务列表
-//     */
-//    fun tasks(): List<HttpDownloadTask>
-
     /**
      * 新建一个任务
      *
@@ -33,7 +25,7 @@ interface HttpDownloadManager {
      * @param task
      * @return
      */
-    fun startTask(task: HttpDownloadTask): HttpDownloadTask
+    fun newTask(task: HttpDownloadTask)
 
     /**
      * 暂停一个任务
@@ -41,6 +33,6 @@ interface HttpDownloadManager {
      * @param task
      * @return
      */
-    fun pauseTask(task: HttpDownloadTask): HttpDownloadTask
+    fun pauseTask(task: HttpDownloadTask)
 
 }
