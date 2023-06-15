@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="default_bar_height">50dp</dimen>
+    <dimen name="default_bar_margin">8dp</dimen>
+    <dimen name="default_bar_icon_width">24dp</dimen>
+    <dimen name="default_bar_icon_height">24dp</dimen>
+
+
+    <!--  play window height  -->
+    <dimen name="default_play_lyrics_height">400dp</dimen>
+    <!--  play icon height  -->
+    <color name="default_play_icon_color">#ffffff</color>
+    <color name="default_play_duration_text_color">#ffffff</color>
+    <color name="default_play_time_text_color">#ffffff</color>
+
+    <!--  color of the author text view   -->
+    <color name="default_play_author_color">#b5bab6</color>
+    <!--  size of the play series icons -->
+    <dimen name="default_play_icon_size">30dp</dimen>
+    <!--  size of the 'play' icon -->
+    <dimen name="default_play_icon_large_size">60dp</dimen>
+
+</resources>
