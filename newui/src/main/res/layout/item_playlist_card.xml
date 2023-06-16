@@ -5,6 +5,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardElevation="0dp"
     app:cardCornerRadius="32dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:strokeWidth="0dp"
+    android:background="@drawable/bg_item_card"
     app:cardBackgroundColor="@color/mainBackgroundColor">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -44,6 +48,7 @@
                 android:ellipsize="end"
                 android:textColor="@color/white"
                 android:textSize="24sp"
+                android:maxLines="1"
                 android:textStyle="bold" />
 
             <TextView
@@ -52,6 +57,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:maxLines="3"
+                android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:text="@string/playlist_info"/>
         </LinearLayout>

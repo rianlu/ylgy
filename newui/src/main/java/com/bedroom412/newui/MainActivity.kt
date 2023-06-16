@@ -27,20 +27,14 @@ class MainActivity : AppCompatActivity() {
 
         initBlurNav()
 
+        initTabLayout()
+    }
+
+    private fun initTabLayout() {
         binding.navTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                val id = tab?.id
-                when (id) {
-                    R.id.homeTab -> {
-                        switchFragment(0)
-                    }
-                    R.id.blankTab -> {
-                        switchFragment(1)
-                    }
-                    R.id.mineTab -> {
-                        switchFragment(2)
-                    }
-                }
+                if (tab == null) return
+                switchFragment(tab.position)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {

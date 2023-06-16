@@ -11,33 +11,39 @@
 
     <eightbitlab.com.blurview.BlurView
         android:id="@+id/navBlurView"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="32dp"
-        android:layout_margin="24dp"
-        android:background="@drawable/bg_bottom_bav"
+        app:cardCornerRadius="24dp"
+        android:layout_margin="32dp"
+        android:background="@drawable/bg_blur_nav"
         app:blurOverlayColor="#63999999"
-        android:layout_gravity="bottom">
+        android:layout_gravity="bottom|center">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/navTabLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="48dp"
+            android:background="#00FFFFFF"
+            app:tabIndicator="@drawable/bg_tab_indicator"
+            app:tabIndicatorAnimationMode="elastic"
+            app:tabIndicatorFullWidth="true"
+            app:tabRippleColor="@null"
+            app:tabGravity="center"
+            app:tabMinWidth="80dp"
+            app:tabIndicatorColor="@color/mainBackgroundColor"
+            app:tabIndicatorHeight="48dp">
 
             <com.google.android.material.tabs.TabItem
-                android:id="@+id/homeTab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:icon="@drawable/ic_home"/>
 
             <com.google.android.material.tabs.TabItem
-                android:id="@+id/blankTab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:icon="@drawable/ic_home"/>
 
             <com.google.android.material.tabs.TabItem
-                android:id="@+id/mineTab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:icon="@drawable/ic_mine"/>
