@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <declare-styleable name="LyricsView">
+        <attr name="selected_text_size_scale" format="float" />
+        <attr name="unselected_text_color" format="color" />
+        <attr name="selected_text_size" format="dimension" />
+        <attr name="selected_text_color" format="color" />
+        <attr name="selected_high_light_text_color" format="color" />
+        <attr name="lyric_view" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="LyricsLayout">
+        <attr name="lyric_margin_left" format="dimension" />
+        <attr name="lyric_margin_top" format="dimension" />
+        <attr name="lyric_margin_right" format="dimension" />
+        <attr name="lyric_margin_bottom" format="dimension" />
+    </declare-styleable>
+
+
+    <style name="LyricsView">
+        <item name="selected_text_size_scale">1.04</item>
+        <item name="unselected_text_color">#E42096</item>
+        <item name="selected_text_size">20sp</item>
+        <item name="selected_text_color">#FFFFFF</item>
+        <item name="selected_high_light_text_color">#00FF33</item>
+    </style>
+</resources>

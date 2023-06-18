@@ -3,11 +3,15 @@ package com.bedroom412.ylgy.util
 import java.io.File
 
 
+/**
+ * LyricsParser
+ */
 object LyricsParser {
     fun parse(file: File): Pair<Metadata, List<Lyric>> {
         val metadata = Metadata(null, null, null, null, null)
         val regexTime = "\\[(\\d{2}):(\\d{2})\\.(\\d{2})]".toRegex()
         val lyrics = mutableListOf<Lyric>()
+        var nextTime: Long? = null
         file.forEachLine { line ->
             when {
                 line.startsWith("[ti:") -> {
@@ -36,12 +40,14 @@ object LyricsParser {
                         val time =
                             minute.toLong() * 60000 + second.toLong() * 1000 + millisecond.toLong() * 10
                         val text = line.substringAfter("]").trim()
-                        lyrics.add(Lyric(time, text))
+                        val endTime = nextTime ?: (time + 5000)
+                        lyrics.add(Lyric(time, text, endTime - time))
+                        nextTime = time + endTime - time
                     }
                 }
             }
         }
-        lyrics.sortBy { it.time }
+        lyrics.sortBy { it.timeBegin }
         return Pair(metadata, lyrics)
     }
 }

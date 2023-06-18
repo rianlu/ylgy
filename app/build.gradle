@@ -53,4 +53,6 @@ dependencies {
 //    //协程依赖
 //    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
 //    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+
+    implementation 'com.google.android.exoplayer:exoplayer:2.18.7'
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".activity.PlayActivity">
+    tools:context="com.bedroom412.player.com.bedroom412.ylgy.activity.PlayActivity">
 
     <!-- titile   -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -94,7 +94,7 @@
             android:id="@+id/play_content_play_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -177,19 +177,32 @@
             app:layout_constraintTop_toTopOf="parent">
 
 
-            <com.bedroom412.ylgy.view.lyricsLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/lyric_tv"
+<!--            <ScrollView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent">-->
+                <com.bedroom412.ylgy.view.LyricsLayout
+                    android:id="@+id/play_lyrics_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="歌词"
-                 />
+                    android:layout_height="match_parent"
+                    android:gravity="top|center"
+                    android:orientation="vertical">
 
-            </com.bedroom412.ylgy.view.lyricsLayout>
+                    <TextView
+                        android:id="@+id/lyric_tv"
+                        android:layout_width="300dp"
+                        android:layout_height="wrap_content"
+                        android:text="歌词"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="歌词"
+                        />
+
+                </com.bedroom412.ylgy.view.LyricsLayout>
+
+<!--            </ScrollView>-->
 
 
 

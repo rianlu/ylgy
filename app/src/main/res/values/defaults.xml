@@ -20,4 +20,17 @@
     <!--  size of the 'play' icon -->
     <dimen name="default_play_icon_large_size">60dp</dimen>
 
+    <dimen name="default_selected_text_scale">1.04</dimen>
+    <color name="default_unselected_text_color" format="color">#b5bab6</color>
+    <dimen name="default_selected_text_size" format="dimension">20sp</dimen>
+    <color name="default_selected_text_color" format="color">#FFFFFF</color>
+    <color name="default_selected_high_light_text_color" format="color">#00FF33</color>
+
+    <!--  lyric_layout  -->
+    <dimen name="default_lyric_margin_left" format="dimension">10sp</dimen>
+    <dimen name="default_lyric_margin_top" format="dimension">10sp</dimen>
+    <dimen name="default_lyric_margin_right" format="dimension">10sp</dimen>
+    <dimen name="default_lyric_margin_bottom" format="dimension">10sp</dimen>
+
+
 </resources>
