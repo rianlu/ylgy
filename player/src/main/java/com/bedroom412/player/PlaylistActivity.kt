@@ -1,41 +1,31 @@
-package com.bedroom412.ylgy.ui
+package com.bedroom412.player
 
+import android.content.ComponentName
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import com.bedroom412.player.MetadataReaderUtils
-import com.bedroom412.player.MusicData
-import com.bedroom412.player.MusicDataAdapter
-import com.bedroom412.player.SingletonPlayer
-import com.bedroom412.ylgy.databinding.FragmentBlankBinding
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
+import com.bedroom412.player.databinding.ActivityPlaylistBinding
+import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class BlankFragment : Fragment() {
+class PlaylistActivity : AppCompatActivity() {
 
-    private var _binding: FragmentBlankBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: ActivityPlaylistBinding
     lateinit var player: Player
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentBlankBinding.inflate(layoutInflater, container, false)
-        return binding.root
-    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityPlaylistBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val musicDataList = MetadataReaderUtils.getMusicDataList(requireContext())
+        val musicDataList = MetadataReaderUtils.getMusicDataList(this)
         val dataAdapter = MusicDataAdapter(musicDataList)
         binding.recyclerView.adapter = dataAdapter
         dataAdapter.setOnItemClickListener(object : MusicDataAdapter.OnItemClickListener {
@@ -59,15 +49,17 @@ class BlankFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     fun addMediaItem(uri: Uri) {
         val newItem = MediaItem.Builder()
             .setMediaId("$uri")
             .build()
         player.addMediaItem(newItem)
+    }
+
+    fun loadMediaItem(uri: Uri) {
+        val newItem = MediaItem.Builder()
+            .setMediaId("$uri")
+            .build()
+        player.setMediaItem(newItem)
     }
 }

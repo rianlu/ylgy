@@ -8,7 +8,7 @@
     android:clickable="true"
     android:focusable="true"
     app:strokeWidth="0dp"
-    android:background="@drawable/bg_item_card"
+    android:background="@drawable/bg_item_playlist_card"
     app:cardBackgroundColor="@color/mainBackgroundColor">
 
     <androidx.constraintlayout.widget.ConstraintLayout

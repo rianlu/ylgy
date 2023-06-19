@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context="com.bedroom412.player.com.bedroom412.ylgy.activity.PlayActivity">
+    tools:context=".activity.PlayActivity">
 
     <!-- titile   -->
     <androidx.constraintlayout.widget.ConstraintLayout

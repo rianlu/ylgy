@@ -2,11 +2,11 @@ package com.bedroom412.ylgy.ui
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
+import com.bedroom412.ylgy.R
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -40,7 +40,6 @@ class PlaylistAdapter: BaseDifferAdapter<Playlist, QuickViewHolder>(EntityDiffCa
                         target: Target<Drawable>?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        Log.d(LOG_TAG, "Error: ${e?.message.toString()}}")
                         return false
                     }
 

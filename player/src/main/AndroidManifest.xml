@@ -4,10 +4,11 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+<!--  测试模块加上这个  android:name=".MyApplication"-->
     <application
         android:theme="@style/Theme.Ylgy">
         <activity
-            android:name=".PlayerActivity"
+            android:name=".PlaylistActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

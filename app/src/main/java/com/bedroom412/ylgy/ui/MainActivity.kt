@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.bedroom412.ylgy.R
 import com.bedroom412.ylgy.databinding.ActivityMainBinding
 import com.google.android.material.tabs.TabLayout
 import eightbitlab.com.blurview.RenderScriptBlur

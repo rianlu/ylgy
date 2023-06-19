@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bedroom412.newui.databinding.FragmentMineBinding
+import com.bedroom412.ylgy.databinding.FragmentMineBinding
 
 class MineFragment : Fragment() {
     private var _binding: FragmentMineBinding? = null

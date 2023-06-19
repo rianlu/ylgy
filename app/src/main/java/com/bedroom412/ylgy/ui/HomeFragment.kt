@@ -6,11 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
-import com.bedroom412.newui.databinding.FragmentHomeBinding
-import com.chad.library.adapter.base.BaseQuickAdapter
+import com.bedroom412.ylgy.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 

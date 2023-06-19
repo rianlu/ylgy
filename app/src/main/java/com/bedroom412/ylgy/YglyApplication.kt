@@ -8,12 +8,12 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
 import androidx.room.Room
+import com.bedroom412.player.SingletonPlayer
 import com.bedroom412.ylgy.dao.AppDatabase
 
 class YglyApplication : Application() {
 
     private var TAG = "YglyApplication"
-
 
     lateinit var downloadBinder: DownloadService.DownloadBinder
 
@@ -42,6 +42,9 @@ class YglyApplication : Application() {
         bindService(intent, connection!!, Context.BIND_AUTO_CREATE)
 //        httpDownloadManagerImpl.start()
         Log.d(TAG, "Application Stared.")
+
+        // 初始化播放器及服务
+        SingletonPlayer.init(this)
     }
 
     override fun onTerminate() {
