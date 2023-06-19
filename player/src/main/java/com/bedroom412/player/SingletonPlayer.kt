@@ -3,6 +3,8 @@ package com.bedroom412.player
 import android.app.Application
 import android.content.ComponentName
 import androidx.media3.common.Player
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaController
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken

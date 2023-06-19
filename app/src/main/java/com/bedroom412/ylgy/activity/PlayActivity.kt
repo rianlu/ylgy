@@ -1,93 +1,220 @@
 package com.bedroom412.ylgy.activity
 
-import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
+import androidx.core.view.isVisible
+import androidx.media3.common.Player
+import androidx.media3.common.Player.Listener
+import androidx.media3.common.Player.REPEAT_MODE_ALL
+import androidx.media3.common.Player.REPEAT_MODE_OFF
+import androidx.media3.common.Player.REPEAT_MODE_ONE
+import com.bedroom412.player.SingletonPlayer
+import com.bedroom412.ylgy.R
 import com.bedroom412.ylgy.databinding.ActivityPlayBinding
-import com.bedroom412.ylgy.util.Lyric
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.bedroom412.ylgy.util.LyricsParser
 
-class PlayActivity : AppCompatActivity() {
+class PlayActivity : AppCompatActivity(), Listener {
+
     private lateinit var binding: ActivityPlayBinding
+
+    private val mHandler: Handler = Handler(Looper.myLooper()!!)
+
+    private var updateProgressAction: Runnable = Runnable { updateProgress() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        SingletonPlayer.getInstance().removeListener(this);
+    }
 
-        binding.lyricTv.setOnClickListener {
-            it.scrollBy(200,200)
+    override fun onResume() {
+        super.onResume()
+        SingletonPlayer.getInstance().addListener(this)
+        updateAll()
+    }
+
+
+    override fun onEvents(player: Player, events: Player.Events) {
+        if (events.containsAny(
+                Player.EVENT_PLAYBACK_STATE_CHANGED,
+                Player.EVENT_PLAY_WHEN_READY_CHANGED,
+                Player.EVENT_AVAILABLE_COMMANDS_CHANGED
+            )
+        ) {
+            updatePlayPauseButton()
+            Log.d("ylgy", "updatePlayPauseButton")
+        }
+        if (events.containsAny(
+                Player.EVENT_PLAYBACK_STATE_CHANGED,
+                Player.EVENT_PLAY_WHEN_READY_CHANGED,
+                Player.EVENT_IS_PLAYING_CHANGED,
+                Player.EVENT_AVAILABLE_COMMANDS_CHANGED
+            )
+        ) {
+            updateProgress()
+            Log.d("ylgy", "updateProgress")
+        }
+        if (events.containsAny(
+                Player.EVENT_REPEAT_MODE_CHANGED,
+                Player.EVENT_AVAILABLE_COMMANDS_CHANGED
+            )
+        ) {
+            updateRepeatModeButton()
+            Log.d("ylgy", "updateRepeatModeButton")
+        }
+        if (events.containsAny(
+                Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED, Player.EVENT_AVAILABLE_COMMANDS_CHANGED
+            )
+        ) {
+//            updateShuffleButton()
+            Log.d("ylgy", "updateShuffleButton")
+
+        }
+        if (events.containsAny(
+                Player.EVENT_REPEAT_MODE_CHANGED,
+                Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED,
+                Player.EVENT_POSITION_DISCONTINUITY,
+                Player.EVENT_TIMELINE_CHANGED,
+                Player.EVENT_SEEK_BACK_INCREMENT_CHANGED,
+                Player.EVENT_SEEK_FORWARD_INCREMENT_CHANGED,
+                Player.EVENT_AVAILABLE_COMMANDS_CHANGED
+            )
+        ) {
+//            updateNavigation()
+            Log.d("ylgy", "updateNavigation")
+
+        }
+        if (events.containsAny(
+                Player.EVENT_POSITION_DISCONTINUITY,
+                Player.EVENT_TIMELINE_CHANGED,
+                Player.EVENT_AVAILABLE_COMMANDS_CHANGED
+            )
+        ) {
+//            updateTimeline()
+            Log.d("ylgy", "updateTimeline")
+
+        }
+        if (events.containsAny(
+                Player.EVENT_PLAYBACK_PARAMETERS_CHANGED,
+                Player.EVENT_AVAILABLE_COMMANDS_CHANGED
+            )
+        ) {
+//            updatePlaybackSpeedList()
+            Log.d("ylgy", "updatePlaybackSpeedList")
+
+        }
+        if (events.containsAny(
+                Player.EVENT_TRACKS_CHANGED,
+                Player.EVENT_AVAILABLE_COMMANDS_CHANGED
+            )
+        ) {
+//            updateTrackLists()
+            Log.d("ylgy", "updateTrackLists")
+
+        }
+    }
+
+    private fun updateAll() {
+        updatePlayPauseButton()
+        updateNextButton()
+        updateRepeatModeButton()
+        updateLyrics()
+        updateProgress()
+    }
+
+    private fun updateRepeatModeButton() {
+        val player = SingletonPlayer.getInstance()
+        if (player.shuffleModeEnabled) {
+            binding.playModeBtn.setImageResource(R.drawable.ic_play_ramdom_play_mode)
+        } else if (player.repeatMode == REPEAT_MODE_ONE) {
+            binding.playModeBtn.setImageResource(R.drawable.ic_play_single_loop_mode)
+        } else if (player.repeatMode == REPEAT_MODE_ALL) {
+            binding.playModeBtn.setImageResource(R.drawable.ic_play_loop_play_mode)
+        } else if (player.repeatMode == REPEAT_MODE_OFF) {
+            Log.d("ylgy", "error play mode on player")
         }
 
-        var listOf = listOf<Lyric>(
-            Lyric(0, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg",99000),
-            Lyric(99000, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg",99000 *2),
-            Lyric(99000 *2 , "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg",99000 *3),
-//            Lyric(3000, "你好啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊",7000),
-//            Lyric(7000, "这个不是少时诵诗书所所所所所所所所所所所所所所",20000),
-//            Lyric(0, "这个不是少时诵诗书所所所所所所所所所所所所所所",0),
-//            Lyric(0, "这个不是少时诵诗书所所所所所所所所所所所所所所",0),
-//            Lyric(0, "这个不是少时诵诗书所所所所所所所所所所所所所所",0),
-        )
-        binding.playLyricsLayout.setLyrics(listOf)
+    }
 
-        val player = ExoPlayer.Builder(this)
-            .build()
-        val mediaItem = MediaItem.fromUri("https://pan.zzxw02.xyz/0:/%E9%82%93%E7%B4%AB%E6%A3%8B/G.E.M. 邓紫棋 - 光年之外.mp3")
-        player.setMediaItem(mediaItem)
-        player.prepare()
-//        player.play()
+    private fun updateNextButton() {
+        var player = SingletonPlayer.getInstance()
+        if (player.nextMediaItemIndex == -1) {
+            updateButton(false, binding.playNextBtn)
+        } else {
+            updateButton(true, binding.playNextBtn)
+        }
+        if (player.previousMediaItemIndex == -1) {
+            updateButton(false, binding.playPrevBtn)
+        } else {
+            updateButton(true, binding.playPrevBtn)
+        }
+    }
 
-//        player.addListener(object : Listener {
-//            override fun onSeekProcessed() {
-//                super.onSeekProcessed()
-//            }
-//
-//            override fun onPositionDiscontinuity(
-//                oldPosition: Player.PositionInfo,
-//                newPosition: Player.PositionInfo,
-//                reason: Int
-//            ) {
-//                super.onPositionDiscontinuity(oldPosition, newPosition, reason)
-//            }
-//        })
+    private fun updateButton(enabled: Boolean, view: View?) {
+        if (view == null) {
+            return
+        }
+        view.isEnabled = enabled
+    }
 
-        var i = 0L;
-        CoroutineScope(Dispatchers.Main).launch {
-            while (true) {
-                i  = i+1000
-                var currentPosition = player.currentPosition
-                binding.playLyricsLayout.onProcessing(i)
-                delay(200)
+    private fun updatePlayPauseButton() {
+        val shouldShowPauseButton = shouldShowPauseButton()
+        if (shouldShowPauseButton) {
+            binding.playBtn.setImageResource(R.drawable.ic_play_pause)
+        } else {
+            binding.playBtn.setImageResource(R.drawable.ic_play_play)
+        }
+    }
+
+    private fun shouldShowPauseButton(): Boolean {
+        var player = SingletonPlayer.getInstance()
+        return player.getPlaybackState() != Player.STATE_ENDED && player.getPlaybackState() != Player.STATE_IDLE && player.getPlayWhenReady()
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+        mHandler.removeCallbacks(updateProgressAction)
+        SingletonPlayer.getInstance().removeListener(this);
+    }
+
+    fun updateLyrics() {
+        var player = SingletonPlayer.getInstance()
+        if (player.isCommandAvailable(Player.COMMAND_GET_CURRENT_MEDIA_ITEM)
+        ) {
+            player.currentMediaItem?.let {
+                it.localConfiguration?.tag
+            }?.let {
+                (it as String).let {
+                    val (_, lyrics) = LyricsParser.parse(it)
+                    binding.playLyricsLayout.setLyrics(lyrics)
+                    updateProgress()
+                }
             }
         }
     }
 
+    private fun updateProgress() {
+        var player = SingletonPlayer.getInstance()
+        var position: Long = 0
+        if (player.isCommandAvailable(Player.COMMAND_GET_CURRENT_MEDIA_ITEM)) {
+            position = player.currentPosition
+        }
 
-//    override fun onTouchEvent(event: MotionEvent?): Boolean {
-//        when (event?.action) {
-//            MotionEvent.ACTION_DOWN -> {
-//                Log.d("ylgy", "onInterceptTouchEvent PlayActivity ACTION_DOWN")
-//            }
-//
-//            MotionEvent.ACTION_MOVE -> {
-//                Log.d("ylgy", "onInterceptTouchEvent PlayActivity ACTION_MOVE")
-//                var lyricsLayout = binding.playContentLyricsLayout.findViewById<LyricsLayout>(R.id.play_lyrics_layout)
-//                lyricsLayout.dispatchTouchEvent(event)
-//
-//                return false
-//            }
-//        }
-//
-//
-//        return super.onTouchEvent(event)
-//    }
+        if (binding.playLyricsLayout.isVisible) {
+            binding.playLyricsLayout.onProcessing(position);
+        }
+        mHandler.removeCallbacks(updateProgressAction)
+        val playbackState = player.playbackState ?: Player.STATE_IDLE
+        if (player.isPlaying) {
+            mHandler.postDelayed(updateProgressAction, 200)
+        } else if (playbackState != Player.STATE_ENDED && playbackState != Player.STATE_IDLE) {
+            mHandler.postDelayed(updateProgressAction, 1000)
+        }
+    }
 }

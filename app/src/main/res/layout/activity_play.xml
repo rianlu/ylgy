@@ -187,19 +187,6 @@
                     android:gravity="top|center"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/lyric_tv"
-                        android:layout_width="300dp"
-                        android:layout_height="wrap_content"
-                        android:text="歌词"
-                        />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="歌词"
-                        />
-
                 </com.bedroom412.ylgy.view.LyricsLayout>
 
 <!--            </ScrollView>-->

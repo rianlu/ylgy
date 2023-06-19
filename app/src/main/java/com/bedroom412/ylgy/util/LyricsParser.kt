@@ -8,11 +8,16 @@ import java.io.File
  */
 object LyricsParser {
     fun parse(file: File): Pair<Metadata, List<Lyric>> {
+        return parse(file.toString());
+    }
+
+
+    fun parse(string: String): Pair<Metadata, List<Lyric>> {
         val metadata = Metadata(null, null, null, null, null)
         val regexTime = "\\[(\\d{2}):(\\d{2})\\.(\\d{2})]".toRegex()
         val lyrics = mutableListOf<Lyric>()
         var nextTime: Long? = null
-        file.forEachLine { line ->
+        string.split("\n").forEach { line ->
             when {
                 line.startsWith("[ti:") -> {
                     metadata.title = line.substringAfter("[").substringBefore("]")
