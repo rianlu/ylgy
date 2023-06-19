@@ -1,9 +1,13 @@
 package com.bedroom412.newui
 
 import android.os.Bundle
+import android.view.ViewGroup
+import android.view.ViewOutlineProvider
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bedroom412.newui.databinding.ActivityMainBinding
+import com.google.android.material.tabs.TabLayout
+import eightbitlab.com.blurview.RenderScriptBlur
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,23 +25,34 @@ class MainActivity : AppCompatActivity() {
 
         initFragment()
 
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when(item.itemId) {
-                R.id.page_1 -> {
-                    switchFragment(0)
-                    true
-                }
-                R.id.page_2 -> {
-                    switchFragment(1)
-                    true
-                }
-                R.id.page_3 -> {
-                    switchFragment(2)
-                    true
-                }
-                else -> false
+        initBlurNav()
+
+        initTabLayout()
+    }
+
+    private fun initTabLayout() {
+        binding.navTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                if (tab == null) return
+                switchFragment(tab.position)
             }
-        }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+        })
+    }
+
+    private fun initBlurNav() {
+        val radius = 20f
+        val rootView = window.decorView.findViewById(android.R.id.content) as ViewGroup
+        binding.navBlurView.setupWith(rootView, RenderScriptBlur(this))
+            .setFrameClearDrawable(window.decorView.background)
+            .setBlurRadius(radius)
+        binding.navBlurView.outlineProvider = ViewOutlineProvider.BACKGROUND
+        binding.navBlurView.clipToOutline = true
     }
 
     private fun initFragment() {
