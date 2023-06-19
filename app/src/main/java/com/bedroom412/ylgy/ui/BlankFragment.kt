@@ -1,20 +1,21 @@
-package com.bedroom412.newui
+package com.bedroom412.ylgy.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bedroom412.newui.databinding.FragmentMineBinding
+import com.bedroom412.newui.databinding.FragmentBlankBinding
 
-class MineFragment : Fragment() {
-    private var _binding: FragmentMineBinding? = null
+class BlankFragment : Fragment() {
+
+    private var _binding: FragmentBlankBinding? = null
     private val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMineBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentBlankBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 

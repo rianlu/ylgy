@@ -1,11 +1,11 @@
-package com.bedroom412.newui
+package com.bedroom412.ylgy.ui
 
 import android.os.Bundle
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.bedroom412.newui.databinding.ActivityMainBinding
+import com.bedroom412.ylgy.databinding.ActivityMainBinding
 import com.google.android.material.tabs.TabLayout
 import eightbitlab.com.blurview.RenderScriptBlur
 

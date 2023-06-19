@@ -1,4 +1,4 @@
-package com.bedroom412.newui
+package com.bedroom412.ylgy.ui
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -13,7 +13,6 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.chad.library.adapter.base.BaseDifferAdapter
-import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.QuickViewHolder
 
 /**
@@ -72,4 +71,3 @@ class PlaylistAdapter: BaseDifferAdapter<Playlist, QuickViewHolder>(EntityDiffCa
         }
     }
 }
-private const val LOG_TAG = "PlaylistAdapter"

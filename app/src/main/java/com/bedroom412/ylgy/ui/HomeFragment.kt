@@ -1,4 +1,4 @@
-package com.bedroom412.newui
+package com.bedroom412.ylgy.ui
 
 import android.graphics.Rect
 import android.os.Bundle
