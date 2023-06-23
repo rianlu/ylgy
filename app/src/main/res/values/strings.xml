@@ -7,4 +7,18 @@
     <string name="app_bar_title">推荐</string>
     <string name="playlist_title">歌单标题</string>
     <string name="playlist_info">歌单介绍</string>
+
+    <string name="source_header">基础</string>
+    <string name="source_advance">高级设置</string>
+
+    <string name="source_name">设置名称</string>
+    <string name="source_url">设置URL</string>
+    <string name="source_proxy_url">代理(Http/Socks5)</string>
+    <string name="source_proxy_url_summary">http://example:80|socks5://example</string>
+    <string name="source_proxy_on">是否开启代理</string>
+    <string name="source_playlist">导入到歌单</string>
+
+    <string name="source_auto_create_playlist">自动创建同源名的歌单</string>
+    <string name="source_auto_create_playlist_summary_on">当导入到歌单未选择时自动创建</string>
+    <string name="source_auto_create_playlist_summary_off">开启后,当导入到歌单未选择时自动创建</string>
 </resources>
