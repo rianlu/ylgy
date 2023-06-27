@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
  * 导入源
  *
  * @property url 地址
- * @property type
+ * @property type {@link com.bedroom412.ylgy.model.SourceType}
  */
 @Entity(tableName = "import_source")
 data class ImportSource(
@@ -22,9 +22,9 @@ data class ImportSource(
     var type: Int?,
     @ColumnInfo("name")
     var name: String?,
-
-    @ColumnInfo("cnt")
-    var cnt: Int?,
+//
+//    @ColumnInfo("cnt")
+//    var cnt: Int?,
 
     @ColumnInfo("last_sync_ts")
     var lastSyncTs: Int?,
@@ -33,8 +33,15 @@ data class ImportSource(
     var playlistId: Int?,
 
     @ColumnInfo("is_need_sync")
-    var isNeedSync: Int
+    var isNeedSync: Int,
 
+    @ColumnInfo("proxy_type")
+    var proxyType: Int?,
 
+    @ColumnInfo("proxy_on")
+    var proxyOn: Int?,
+
+    @ColumnInfo("proxy_address")
+    var proxyAddress: String?,
 ) {
 }

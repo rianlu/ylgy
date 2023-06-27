@@ -13,4 +13,6 @@ interface PlayListDao {
     @Query("SELECT * FROM playlist WHERE id = :id")
     fun getById(id: Int): PlayList
 
+    @Query("SELECT * FROM playlist order by id asc")
+    fun getAll(): List<PlayList>?
 }
